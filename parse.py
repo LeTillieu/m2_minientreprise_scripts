@@ -11,4 +11,4 @@ config_file=open(path)
 parsed_config_file=yaml.load(config_file,Loader=yaml.FullLoader)
 
 print(parsed_config_file)
-	
+

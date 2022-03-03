@@ -1,29 +1,14 @@
-name:  phishing
+name: phishing
 
 actions:
-
-- type: script
-	name: shutdown
-	desc: shutdown des machines hosts
-	id: 0
-	host: 
-	- name: dns
-	- name: debian
-	script: shutdown.sh
-	params:
-	- name: time
-		value: 5000
-		
-- type: script
-	name: shutdown
-	desc: shutdown des machines hosts
-	id: 0
-	host: 
-	- name: dns
-	- name: debian
-	script: shutdown.sh
-	params:
-	- name: time
-		value: 5000				
-
-		
+  - type: script
+    name: shutdown
+    desc: shutdown des machines hosts
+    id: 0
+    host:
+      - name: dns
+      - name: debian
+    script: shutdown.sh
+    params:
+      - name: time
+        value: 5000
