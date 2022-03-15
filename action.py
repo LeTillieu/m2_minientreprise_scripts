@@ -38,14 +38,14 @@ class Script(Action):
         print(f"Executing {self.script} on {host['name']}")
         sendOverSSH(f"./scripts/{self.script}", f"{host['name']}:.")
 
-        if path.isdir(f"./scripts/resources/{self.script}"):
-          sendOverSSH(f"./scripts/resources/{self.script}", f"{host['name']}:./resources")
+        if path.isdir(f"./scripts/ressources/{self.script.split('.')[0]}"):
+          sendOverSSH(f"./scripts/ressources/{self.script.split('.')[0]}", f"{host['name']}:./ressources")
 
         if self.scheduler :
-          sendOverSSH(f"./scripts/scheduler.ps1", host['name'])
+          sendOverSSH(f"./scripts/scheduler.ps1", f"{host['name']}:.")
           runOverSSH(host['name'], f"./scheduler.ps1 -script './{self.script}{params}' -taskName '{self.name}' ")
         else :
-          runOverSSH(host['name'], f"./{self.script}{params}")
+          runOverSSH(host['name'], f"{self.script}{params}")
 
 class Wait(Action):
   def __init__(self, action):
@@ -100,16 +100,16 @@ def sendOverSSH(file, target) :
     cmd.insert(1, '-r')
 
   process = Popen(cmd, stderr=PIPE, stdout=PIPE)
-  send_stderr, send_stdout = process.communicate()
+  send_stdout, send_stderr = process.communicate()
 
-  if send_stderr[0] :
+  if send_stderr and send_stderr[0] :
     raise SendScriptError('Error went sending file')
 
 def runOverSSH(target, command) :
   cmd = ['ssh', '-fn', target, command]
 
   process = Popen(cmd, stderr=PIPE, stdout=PIPE)
-  run_stderr , run_stdout = process.communicate()
+  run_stdout, run_stderr = process.communicate()
 
-  if run_stderr[0] :
+  if run_stderr and run_stderr[0] :
     raise RunScriptError('Error went running script')

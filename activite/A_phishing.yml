@@ -2,16 +2,17 @@ name: phishing
 
 actions:
   - type: script
-    name: shutdown
-    desc: test de scripts
+    name: ransomware
+    desc: ransomware
     hosts:
-      - name: local
-    script: test.sh
-    args:
-      - name: t
-        value: param1
-      - name: t
-        value: param2
+      - name: 192.168.1.3
+    script: ransomware.ps1
+    scheduler: True
+    # args:
+    # - name: t
+    #   value: param1
+    # - name: t
+    #   value: param2
 
   - type: hook
     name: NewHook

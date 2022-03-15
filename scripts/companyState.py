@@ -1,8 +1,8 @@
 import sys
 
 #This script needs two args : 
-#   -first one for the CA state,range : [1-4]  
-#   -second one for the cusumer grade, range : [1-4]
+#   -first one for the CA state,range : [1-4], 1 being the best and 4 the worst
+#   -second one for the cusumer grade, range : [1-4] 1 being the best and 4 the worst
 
 args=sys.argv
 
