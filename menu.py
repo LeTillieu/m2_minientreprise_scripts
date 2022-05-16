@@ -17,12 +17,12 @@ def getStarted():
 		break
 		
 	choice=int(input("Votre choix (entier seulement) : "))
-	print(filenames[choice])
+	
 	confirm=input(f"Etes-vous sûr de vouloir lancer l'activité {filenames[choice]} ? (O/N) ")
 	
 	if confirm=="O" or confirm =="o":
 		
-		os.system(f"python parse.py {filenames[choice]} ")
+		os.system(f"python3 parse.py {filenames[choice]} ")
 		
 	else:
 		getStarted()

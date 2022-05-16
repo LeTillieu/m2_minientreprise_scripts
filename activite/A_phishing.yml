@@ -5,10 +5,21 @@ actions:
     name: shutdown
     desc: shutdown des machines hosts
     id: 0
-    host:
-      - name: dns
-      - name: debian
-    script: shutdown.sh
+    hosts:
+      - name: local
+    script: test.sh
     params:
-      - name: time
-        value: 5000
+      #- name: s
+       # desc : temps de délai
+        #value: 5000
+      #- name: t
+       # desc: param de test
+       # value: test       
+        
+  - type: ask
+    mode: no_reply
+    text: voulez vous continuer avec moi ce soir ?
+    desc: test d'actions
+  
+    
+       
