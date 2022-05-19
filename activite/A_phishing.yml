@@ -3,23 +3,26 @@ name: phishing
 actions:
   - type: script
     name: shutdown
-    desc: shutdown des machines hosts
+    desc: test de scripts
     id: 0
     hosts:
       - name: local
     script: test.sh
-    params:
-      #- name: s
-       # desc : temps de délai
-        #value: 5000
-      #- name: t
-       # desc: param de test
-       # value: test       
-        
-  - type: ask
-    mode: no_reply
-    text: voulez vous continuer avec moi ce soir ?
-    desc: test d'actions
-  
-    
-       
+    args:
+      - name: t
+        value: param1
+      - name: t
+        value: param2
+
+  - type: wait
+    text: Le type a été lancé
+    name: test de wait
+    time: 10
+    input:
+      - name: message test
+        condition: o
+
+  - type: hook
+    name: no_reply
+    desc: test de hook
+    route:
