@@ -1,0 +1,5 @@
+$remap = New-Object -TypeName byte[] -ArgumentList 20
+$key = "HKLM:\SYSTEM\CurrentControlSet\Control\Keyboard Layout"
+$remap[8] = 02
+$remap[15] = 0x02e
+$New-ItemProperty -Path $key -Name "Scancode Map" -Value $remap -Force

