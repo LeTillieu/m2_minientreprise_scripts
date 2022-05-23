@@ -1,8 +1,44 @@
-from re import S
+from flask import Flask
+from action import Hook, Script, Wait
+from threading import Thread
 import sys
+import logging
+import click
 import yaml
 import time
-import os
+
+app=Flask(__name__)
+
+#Déactivation du logging de Flask
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
+def secho(text, file=None, nl=None, err=None, color=None, **styles):
+    pass
+
+def echo(text, file=None, nl=None, err=None, color=None, **styles):
+    pass
+
+click.echo = echo
+click.secho = secho
+
+#Configuration de Flask
+@app.route('/')
+def index():
+  return '<h1>Hook Server running</h1>', 200
+
+@app.route('/<string:id>')
+def hook(id):
+  for item in Hook.running :
+    if(id == item.route):
+      return '<h1>' + item.name + ' hooked </h1>', 200
+  return '', 404
+
+if __name__ == '__main__':
+  kwargs = {'host': '0.0.0.0', 'port': '5443', 'threaded': True, 'use_reloader': False, 'debug': False}
+  flaskThread = Thread(target=app.run, daemon=True, kwargs=kwargs,).start()
+
+
 
 def script_module(action):
 
@@ -54,7 +90,11 @@ def wait_module(action):
 
 
 def hook_module(action):
-	print("un hook a été lance")
+	name=action['name']
+	route=action['route']
+
+	Hook(name,route)
+
 	return 1
 
 

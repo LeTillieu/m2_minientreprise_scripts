@@ -14,15 +14,14 @@ actions:
       - name: t
         value: param2
 
+  - type: hook
+    name: NewHook
+    route: new
+
   - type: wait
     text: Le type a été lancé
     name: test de wait
-    time: 10
+    time: 100
     input:
       - name: message test
         condition: o
-
-  - type: hook
-    name: no_reply
-    desc: test de hook
-    route:
