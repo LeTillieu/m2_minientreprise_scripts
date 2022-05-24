@@ -19,9 +19,6 @@ actions:
     route: new
 
   - type: wait
-    text: Le type a été lancé
+    text: Waitining for input
     name: test de wait
-    time: 100
-    input:
-      - name: message test
-        condition: o
+    # time: 100
