@@ -1,16 +1,16 @@
-from flask import Flask
+from flask import Flask, redirect, request, render_template
 from action import Hook, Script, Wait
 from threading import Thread
+from os import path
 from sys import argv
-import logging
+from logging import getLogger
 import click
 import yaml
-import time
 
 app=Flask(__name__)
 
 #Déactivation du logging de Flask
-log = logging.getLogger('werkzeug')
+log = getLogger('werkzeug')
 log.disabled = True
 
 def secho(text, file=None, nl=None, err=None, color=None, **styles):
@@ -27,11 +27,27 @@ click.secho = secho
 def index():
   return '<h1>Hook Server running</h1>', 200
 
-@app.route('/<string:id>')
+@app.route('/<string:id>', methods = ['GET', 'POST'])
 def hook(id):
   for item in Hook.running :
-    if(id == item.route):
-      return '<h1>' + item.name + ' hooked </h1>', 200
+    if id == item.route:
+      if item.once:
+        item.stop()
+
+      if request.method == 'POST' and item.data:
+        file = request.files['file']
+        file.save(f"./out/{item.data}")
+
+      if item.action:
+        item.action.target = request.remote_addr
+        item.action.run()
+
+      if display:=item.display:
+        if display['type'] == 'redirect': return redirect(display['value'], 302)
+        if display['type'] == 'template': return render_template(display['value'])
+
+      return item.name, 200
+
   return '', 404
 
 if __name__ == '__main__':

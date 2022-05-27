@@ -4,7 +4,6 @@ actions:
   - type: script
     name: shutdown
     desc: test de scripts
-    id: 0
     hosts:
       - name: local
     script: test.sh
@@ -16,7 +15,22 @@ actions:
 
   - type: hook
     name: NewHook
-    route: new
+    route: keylog
+    display:
+      type: template
+      value: template.html
+    once: False
+    data: ./keylog.txt
+    # action:
+    #   name: scriptHook
+    #   hosts:
+    #     - name: target
+    #   script: test.sh
+    #   args:
+    #     - name: t
+    #       value: param1
+    #     - name: t
+    #       value: param2
 
   - type: wait
     text: Waitining for input
