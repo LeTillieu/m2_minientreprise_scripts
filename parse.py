@@ -50,6 +50,7 @@ def hook(id):
 
   return '', 404
 
+# Lancement de Flask dans un Thread dédié
 if __name__ == '__main__':
   kwargs = {'host': '0.0.0.0', 'port': '5443', 'threaded': True, 'use_reloader': False, 'debug': False}
   flaskThread = Thread(target=app.run, daemon=True, kwargs=kwargs,).start()
