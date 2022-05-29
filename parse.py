@@ -3,26 +3,16 @@ from action import Hook, Script, Wait
 from threading import Thread
 from os import path
 from sys import argv
-from logging import getLogger
-import click
+import flask.cli
+import logging.config
 import yaml
 
 app=Flask(__name__)
 
 #Déactivation du logging de Flask
-log = getLogger('werkzeug')
-log.disabled = True
+flask.cli.show_server_banner = lambda *args: None
+logging.getLogger("werkzeug").disabled = True
 
-def secho(text, file=None, nl=None, err=None, color=None, **styles):
-    pass
-
-def echo(text, file=None, nl=None, err=None, color=None, **styles):
-    pass
-
-click.echo = echo
-click.secho = secho
-
-#Configuration de Flask
 @app.route('/')
 def index():
   return '<h1>Hook Server running</h1>', 200
@@ -52,30 +42,32 @@ def hook(id):
 
 # Lancement de Flask dans un Thread dédié
 if __name__ == '__main__':
-  kwargs = {'host': '0.0.0.0', 'port': '5443', 'threaded': True, 'use_reloader': False, 'debug': False}
-  flaskThread = Thread(target=app.run, daemon=True, kwargs=kwargs,).start()
+  kwargs = {'host': '0.0.0.0', 'port': '5443', 'debug': False}
+  flaskThread = Thread(target=app.run, daemon=True, kwargs=kwargs)
+  flaskThread.start()
 
 # activity_name= argv[1]
-# path='./activite/'+activity_name
-
-path='./activite/A_phishing.yml'
+file_name= 'A_phishing.yml'
+path='./activite/'+file_name
 file=open(path)
-data=yaml.load(file,Loader=yaml.FullLoader)
+activite=yaml.load(file,Loader=yaml.FullLoader)
+file.close()
+
 actions = []
 
-for action in data['actions']:
-	if(action['type']=='script'):
-		actions.append(Script(action))
+for action in activite['actions']:
+  if(action['type']=='script'):
+    actions.append(Script(action))
 
-	elif(action['type']=='wait'):
-		actions.append(Wait(action))
+  elif(action['type']=='wait'):
+    actions.append(Wait(action))
 
-	elif(action['type']=='hook'):
-		actions.append(Hook(action))
+  elif(action['type']=='hook'):
+    actions.append(Hook(action))
 
-	else:
-		raise Exception("Action must have a type")
+  else:
+    raise Exception("Action must have a type")
 
-while len(actions) > 1 :
-	action = actions.pop(1)
-	action.run()
+while len(actions) > 0 :
+  action = actions.pop(0)
+  action.run()

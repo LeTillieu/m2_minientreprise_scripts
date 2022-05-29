@@ -1,5 +1,6 @@
 from time import sleep
 from os import system, path
+import sys
 
 class Action:
   def __init__(self, action):
@@ -28,14 +29,14 @@ class Script(Action):
         host['name'] = self.target
 
       if host['name'] == 'local':
-        print(f'./scripts/{self.script}{param}')
-        system(f'./scripts/{self.script}{param}')
+        print(f'./scripts/{self.script}{params}')
+        #system(f'./scripts/{self.script}{params}')
       else :
         print(f"Executing {self.script} on {host['name']}")
         system(f"scp ./scripts/{self.script} {host['name']}:.")
         if path.isdir(f"./scripts/resources/{self.script}"):
           system(f"scp -r ./scripts/resources/{self.script} {host['name']}:./resources")
-        system(f"ssh -fn {host['name']} 'sudo ./{self.script}{param}'")
+        system(f"ssh -fn {host['name']} 'sudo ./{self.script}{params}'")
 
 class Wait(Action):
   def __init__(self, action):
@@ -49,6 +50,8 @@ class Wait(Action):
       sleep(self.time)
     else :
       choice = input(self.text)
+      sys.stdout.write("\033[F")
+      sys.stdout.write("\033[K")
 
 
 class Hook(Action):
