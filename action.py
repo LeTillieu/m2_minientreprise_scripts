@@ -16,7 +16,7 @@ class Script(Action):
     super().__init__(action)
     self.script = action['script']
     self.hosts = action['hosts']
-    self.args = action['args']
+    self.args = action['args'] if 'args' in action else None
 
   def run(self):
     params = ''
