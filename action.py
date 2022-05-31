@@ -102,14 +102,14 @@ def sendOverSSH(file, target) :
   process = Popen(cmd, stderr=PIPE)
   send_stderr = process.communicate()
 
-  if send_stderr :
+  if send_stderr[0] :
     raise SendScriptError('Error went sending file')
 
 def runOverSSH(target, command) :
   cmd = ['ssh', '-fn', target, command]
 
   process = Popen(cmd, stderr=PIPE)
-  send_stderr = process.communicate()
+  run_stderr = process.communicate()
 
-  if send_stderr :
+  if run_stderr[0] :
     raise RunScriptError('Error went running script')
