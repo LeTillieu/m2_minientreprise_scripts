@@ -43,9 +43,9 @@ class Script(Action):
 
         if self.scheduler :
           sendOverSSH(f"./scripts/scheduler.ps1", host['name'])
-          runOverSSH(host['name'], f"./scheduler.ps1 -script './{self.script}{param}' -taskName '{self.name}' ")
+          runOverSSH(host['name'], f"./scheduler.ps1 -script './{self.script}{params}' -taskName '{self.name}' ")
         else :
-          runOverSSH(host['name'], f"./{self.script}{param}")
+          runOverSSH(host['name'], f"./{self.script}{params}")
 
 class Wait(Action):
   def __init__(self, action):
