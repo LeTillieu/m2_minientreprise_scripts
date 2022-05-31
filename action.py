@@ -36,7 +36,7 @@ class Script(Action):
 
       else :
         print(f"Executing {self.script} on {host['name']}")
-        sendOverSSH(f"./scripts/{self.script}", host['name'])
+        sendOverSSH(f"./scripts/{self.script}", f"{host['name']}:.")
 
         if path.isdir(f"./scripts/resources/{self.script}"):
           sendOverSSH(f"./scripts/resources/{self.script}", f"{host['name']}:./resources")
