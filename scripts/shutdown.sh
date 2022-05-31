@@ -2,4 +2,4 @@
 
 var=$1
 
-sleep $var ; shutdown +0
+sleep $var ; sudo shutdown +0
