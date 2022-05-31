@@ -17,6 +17,7 @@ class Script(Action):
     super().__init__(action)
     self.script = action['script']
     self.hosts = action['hosts']
+    self.scheduler = action['scheduler'] if 'scheduler' in action else False
     self.args = action['args'] if 'args' in action else None
 
   def run(self):
@@ -30,17 +31,21 @@ class Script(Action):
         host['name'] = self.target
 
       if host['name'] == 'local':
-        print(f'./scripts/{self.script}{params}')
-        #system(f'./scripts/{self.script}{params}')
+        #print(f'./scripts/{self.script}{params}')
+        Popen([f'./scripts/{self.script}', params])
+
       else :
         print(f"Executing {self.script} on {host['name']}")
-        scp_run = Popen(['scp', f"./scripts/{self.script}", f"{host['name']}:." ], stdout=PIPE, stderr=PIPE)
-        scp_out, scp_err = scp_run.communicate()
+        sendOverSSH(f"./scripts/{self.script}", host['name'])
 
-        #system(f"scp ./scripts/{self.script} {host['name']}:.")
         if path.isdir(f"./scripts/resources/{self.script}"):
-          system(f"scp -r ./scripts/resources/{self.script} {host['name']}:./resources")
-        system(f"ssh -fn {host['name']} 'sudo ./{self.script}{params}'")
+          sendOverSSH(f"./scripts/resources/{self.script}", f"{host['name']}:./resources")
+
+        if self.scheduler :
+          sendOverSSH(f"./scripts/scheduler.ps1", host['name'])
+          runOverSSH(host['name'], f"./scheduler.ps1 -script './{self.script}{param}' -taskName '{self.name}' ")
+        else :
+          runOverSSH(host['name'], f"./{self.script}{param}")
 
 class Wait(Action):
   def __init__(self, action):
@@ -76,3 +81,35 @@ class Hook(Action):
   def stop(self):
     Hook.running.remove(self)
 
+
+class ScriptError(Exception) :
+  pass
+
+class SendScriptError(ScriptError):
+  def __init__(self, message):
+    self.message = message
+
+class RunScriptError(ScriptError):
+  def __init__(self, message):
+    self.message = message
+
+
+def sendOverSSH(file, target) :
+  cmd = ['scp', file, target]
+  if path.isdir(file) :
+    cmd.insert(1, '-r')
+
+  process = Popen(cmd, stderr=PIPE)
+  send_stderr = process.communicate()
+
+  if send_stderr :
+    raise SendScriptError('Error went sending file')
+
+def runOverSSH(target, command) :
+  cmd = ['ssh', '-fn', target, command]
+
+  process = Popen(cmd, stderr=PIPE)
+  send_stderr = process.communicate()
+
+  if send_stderr :
+    raise RunScriptError('Error went running script')
