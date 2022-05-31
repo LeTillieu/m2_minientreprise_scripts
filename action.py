@@ -1,4 +1,5 @@
 from time import sleep
+from subprocess import Popen, PIPE
 from os import system, path
 import sys
 
@@ -33,7 +34,10 @@ class Script(Action):
         #system(f'./scripts/{self.script}{params}')
       else :
         print(f"Executing {self.script} on {host['name']}")
-        system(f"scp ./scripts/{self.script} {host['name']}:.")
+        scp_run = Popen(['scp', f"./scripts/{self.script}", f"{host['name']}:." ], stdout=PIPE, stderr=PIPE)
+        scp_out, scp_err = scp_run.communicate()
+
+        #system(f"scp ./scripts/{self.script} {host['name']}:.")
         if path.isdir(f"./scripts/resources/{self.script}"):
           system(f"scp -r ./scripts/resources/{self.script} {host['name']}:./resources")
         system(f"ssh -fn {host['name']} 'sudo ./{self.script}{params}'")
